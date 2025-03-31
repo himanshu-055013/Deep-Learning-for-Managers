@@ -17,8 +17,6 @@ from sklearn.metrics import accuracy_score
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from datetime import datetime
 
-pip install plotly
-
 
 # Load the dataset
 @st.cache_data  # Cache data to improve performance
