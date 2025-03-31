@@ -176,6 +176,23 @@ st.plotly_chart(fig_avg_rainfall)
 # Australia Map
 st.subheader("Rainfall Map of Australia")
 
+# Clean column names by stripping whitespace
+map_data.columns = map_data.columns.str.strip()
+avg_rainfall.columns = avg_rainfall.columns.str.strip()
+
+# Ensure 'Location' columns are of the same type (e.g., string)
+map_data['Location'] = map_data['Location'].astype(str)
+avg_rainfall['Location'] = avg_rainfall['Location'].astype(str)
+
+# Check for missing values in 'Location' columns
+if map_data['Location'].isnull().sum() > 0:
+    map_data = map_data.dropna(subset=['Location'])
+if avg_rainfall['Location'].isnull().sum() > 0:
+    avg_rainfall = avg_rainfall.dropna(subset=['Location'])
+
+# Perform the merge after the above checks
+map_data = pd.merge(map_data, avg_rainfall, on='Location', how='left')
+
 # Merge with average rainfall data
 map_data = pd.merge(map_data, avg_rainfall, on='Location', how='left')
 map_data['Rainfall'].fillna(0, inplace=True)  # Fill NaN rainfall values with 0
