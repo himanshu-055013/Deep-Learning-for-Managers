@@ -246,3 +246,14 @@ st.subheader("Model Evaluation")
 y_pred_test = model.predict(scaler.transform(X_test))
 accuracy = accuracy_score(y_test, y_pred_test)
 st.write(f"Accuracy on Test Set: {accuracy:.2f}")
+
+# Debugging step: Print available columns before filling NaN values
+print("Available columns in map_data:", map_data.columns)
+
+# Check if 'Rainfall' column exists before calling fillna()
+if 'Rainfall' in map_data.columns:
+    map_data['Rainfall'].fillna(0, inplace=True)
+else:
+    print("'Rainfall' column not found in map_data.")
+    # You can log this or handle it as needed
+
