@@ -42,6 +42,26 @@ def preprocess_data(df):
 
     return df
 
+# Train the ANN model
+@st.cache_data
+def train_model(df):
+    # Check if the DataFrame is empty
+    if df.empty:
+        st.warning("DataFrame is empty. Cannot train the model.")
+        return None, None, None, None
+
+    X = df.drop(['RainTomorrow', 'Date'], axis=1)
+    y = df['RainTomorrow']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
+
+    model = MLPClassifier(random_state=42, max_iter=300)
+    model.fit(X_train, y_train)
+    return model, scaler, X_test, y_test
+
 # location_coords dictionary (MAKE SURE IT'S COMPLETE)
 location_coords = {
     'Albury': (-36.0737, 146.9135),
@@ -103,11 +123,8 @@ map_data.drop('Coordinates', axis=1, inplace=True)
 file_path = "weatherAUS.csv"  # Use the local file path
 df = load_data(file_path)
 
-# Preprocess data
+# Preprocess data (this will create 'year', 'month', 'day')
 df = preprocess_data(df.copy())
-
-# Train model
-model, scaler, X_test, y_test = train_model(df)
 
 # Streamlit app
 st.title("Rainfall Prediction Dashboard")
@@ -189,6 +206,9 @@ fig_map.update_layout(
 )
 
 st.plotly_chart(fig_map)
+
+# Train model
+model, scaler, X_test, y_test = train_model(filtered_df)
 
 # Prediction section
 st.subheader("Rainfall Prediction")
